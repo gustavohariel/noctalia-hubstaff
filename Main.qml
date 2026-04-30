@@ -132,21 +132,32 @@ Item {
                 root.lastError = String(r.error);
                 return;
             }
-            root.isRunning = r.tracking === true;
+            const wasRunning = root.isRunning;
+            const newRunning = r.tracking === true;
             const ap = r.active_project;
+            const newProjectId = ap?.id ?? -1;
+            const newSec = ap ? root.parseHMS(ap.tracked_today ?? "0:00:00") : 0;
+            const projected = root.elapsedSeconds;
+            const stateChanged = wasRunning !== newRunning || newProjectId !== root.projectId;
+            const drift = Math.abs(newSec - projected);
+            const shouldAnchor = !root.everLoaded || stateChanged || !newRunning || drift > 2;
+
+            root.isRunning = newRunning;
             if (ap) {
-                root.projectId = ap.id ?? -1;
+                root.projectId = newProjectId;
                 root.projectName = ap.name ?? "";
                 root.trackedToday = ap.tracked_today ?? "0:00:00";
-                root._baseSeconds = root.parseHMS(ap.tracked_today ?? "0:00:00");
             } else {
                 root.projectId = -1;
                 root.projectName = "";
                 root.trackedToday = "0:00:00";
-                root._baseSeconds = 0;
             }
-            root._baseEpoch = Date.now();
-            root._now = Date.now();
+
+            if (shouldAnchor) {
+                root._baseSeconds = newSec;
+                root._baseEpoch = Date.now();
+                root._now = Date.now();
+            }
             root.lastError = "";
             root.everLoaded = true;
         } catch (e) {
