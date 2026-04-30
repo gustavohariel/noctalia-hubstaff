@@ -19,13 +19,13 @@ A [Noctalia](https://noctalia.dev) bar plugin that surfaces the running [Hubstaf
 Clone into your Noctalia plugins folder (or symlink from elsewhere):
 
 ```sh
-git clone https://github.com/realgh/noctalia-hubstaff ~/.config/noctalia/plugins/hubstaff
+git clone https://github.com/gustavohariel/noctalia-hubstaff ~/.config/noctalia/plugins/hubstaff
 ```
 
 Enable in `~/.config/noctalia/plugins.json` under `states`:
 
 ```json
-"hubstaff": { "enabled": true, "sourceUrl": "https://github.com/realgh/noctalia-hubstaff" }
+"hubstaff": { "enabled": true, "sourceUrl": "https://github.com/gustavohariel/noctalia-hubstaff" }
 ```
 
 Add to your bar in `~/.config/noctalia/settings.json` (under `bar.widgets.right`, `.center`, or `.left`):
