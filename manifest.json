@@ -1,0 +1,30 @@
+{
+  "id": "hubstaff",
+  "name": "Hubstaff",
+  "version": "0.1.0",
+  "minNoctaliaVersion": "4.4.3",
+  "author": "realgh",
+  "license": "MIT",
+  "description": "Hubstaff timer in the bar with Start/Stop controls.",
+  "repository": "https://github.com/realgh/noctalia-hubstaff",
+  "tags": [
+    "Bar",
+    "Productivity",
+    "Time tracking"
+  ],
+  "entryPoints": {
+    "main": "Main.qml",
+    "barWidget": "BarWidget.qml",
+    "panel": "Panel.qml",
+    "settings": "Settings.qml"
+  },
+  "dependencies": {
+    "plugins": []
+  },
+  "metadata": {
+    "defaultSettings": {
+      "cliPath": "/home/realgh/Hubstaff/HubstaffCLI.bin.x86_64",
+      "refreshIntervalSec": 5
+    }
+  }
+}
