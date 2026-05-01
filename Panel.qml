@@ -13,7 +13,11 @@ Item {
     readonly property var geometryPlaceholder: panelContainer
     readonly property bool allowAttach: true
     property real contentPreferredWidth: 320 * Style.uiScaleRatio
-    property real contentPreferredHeight: 220 * Style.uiScaleRatio
+    // Lets the panel grow with its content + symmetric marginL padding,
+    // matching noctalia's other panel implementations. The previous fixed
+    // 220px cap was too small for the new button rows and pinned them to
+    // the edge.
+    property real contentPreferredHeight: mainColumn.implicitHeight + Style.margin2L
 
     anchors.fill: parent
 
@@ -23,6 +27,7 @@ Item {
         color: "transparent"
 
         ColumnLayout {
+            id: mainColumn
             anchors.fill: parent
             anchors.margins: Style.marginL
             spacing: Style.marginM
@@ -60,6 +65,16 @@ Item {
                         font.weight: Style.fontWeightSemiBold
                         color: (root.mainInstance?.isRunning ?? false) ? Color.mPrimary : Color.mOnSurfaceVariant
                     }
+                }
+
+                NIconButton {
+                    icon: "power"
+                    tooltipText: "Quit Hubstaff — kills the daemon"
+                    colorFg: Color.mError
+                    colorBorder: Qt.alpha(Color.mError, 0.4)
+                    colorBgHover: Qt.alpha(Color.mError, 0.18)
+                    colorFgHover: Color.mError
+                    onClicked: root.mainInstance?.quitApp()
                 }
             }
 
@@ -136,16 +151,6 @@ Item {
                         Layout.fillWidth: true
                         onClicked: Qt.openUrlExternally("https://app.hubstaff.com")
                     }
-                }
-
-                NButton {
-                    text: "Quit Hubstaff"
-                    icon: "power"
-                    outlined: true
-                    backgroundColor: Color.mError
-                    tooltipText: "Kill the Hubstaff daemon — tracking stops and the widget disappears until you relaunch Hubstaff"
-                    Layout.fillWidth: true
-                    onClicked: root.mainInstance?.quitApp()
                 }
             }
 
