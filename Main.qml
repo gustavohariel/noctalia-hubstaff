@@ -119,6 +119,31 @@ Item {
             openApp();
     }
 
+    function quitApp() {
+        quitAppProcess.running = true;
+        // Optimistically tear down state so the widget hides immediately;
+        // the next CLI status poll would do this anyway via the
+        // "Could not connect" branch, but waiting up to refreshIntervalSec
+        // would feel laggy after clicking Quit.
+        root.hubstaffRunning = false;
+        root.isRunning = false;
+        root.everLoaded = false;
+        root.windowOpen = false;
+        root.projectName = "";
+        root.projectId = -1;
+        root.trackedToday = "0:00:00";
+    }
+
+    Process {
+        // Kills the Hubstaff daemon (and any helper processes living next
+        // to it). Matches by absolute install path so we never hit anything
+        // unrelated.
+        id: quitAppProcess
+        command: ["pkill", "-f", "/Hubstaff/Hubstaff"]
+        stdout: StdioCollector {}
+        stderr: StdioCollector {}
+    }
+
     Process {
         id: windowStateProcess
         command: ["sh", root._windowScript, "state"]

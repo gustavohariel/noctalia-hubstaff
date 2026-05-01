@@ -137,6 +137,16 @@ Item {
                         onClicked: Qt.openUrlExternally("https://app.hubstaff.com")
                     }
                 }
+
+                NButton {
+                    text: "Quit Hubstaff"
+                    icon: "power"
+                    outlined: true
+                    backgroundColor: Color.mError
+                    tooltipText: "Kill the Hubstaff daemon — tracking stops and the widget disappears until you relaunch Hubstaff"
+                    Layout.fillWidth: true
+                    onClicked: root.mainInstance?.quitApp()
+                }
             }
 
             Rectangle {
