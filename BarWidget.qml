@@ -52,6 +52,17 @@ Item {
     readonly property real contentWidth: isBarVertical ? capsuleHeight : content.implicitWidth + Style.marginM * 2
     readonly property real contentHeight: isBarVertical ? content.implicitHeight + Style.marginM * 2 : capsuleHeight
 
+    // Close the plugin panel whenever the daemon goes away (Quit click, manual
+    // kill, crash). Otherwise the popup stays anchored to a now-invisible bar
+    // widget. closePanel is a no-op if no panel is open on this screen.
+    Connections {
+        target: root.mainInstance
+        function onHubstaffRunningChanged() {
+            if (!root.mainInstance.hubstaffRunning)
+                root.pluginApi?.closePanel(root.screen);
+        }
+    }
+
     anchors.centerIn: parent
     implicitWidth: contentWidth
     implicitHeight: contentHeight
