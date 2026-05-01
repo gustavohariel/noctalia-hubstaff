@@ -100,24 +100,42 @@ Item {
                 Layout.fillHeight: true
             }
 
-            RowLayout {
+            ColumnLayout {
                 Layout.fillWidth: true
                 spacing: Style.marginM
 
                 NButton {
-                    text: (root.mainInstance?.isRunning ?? false) ? "Resume" : "Start"
-                    icon: "media-play"
+                    readonly property bool running: root.mainInstance?.isRunning ?? false
+                    text: running ? "Stop" : "Start"
+                    icon: running ? "stop" : "media-play"
+                    backgroundColor: running ? Color.mError : Color.mPrimary
+                    textColor: running ? Color.mOnError : Color.mOnPrimary
                     Layout.fillWidth: true
-                    onClicked: root.mainInstance?.actionStart()
+                    onClicked: running ? root.mainInstance?.actionStop() : root.mainInstance?.actionStart()
                 }
 
-                NButton {
-                    text: "Stop"
-                    icon: "stop"
-                    outlined: true
-                    enabled: root.mainInstance?.isRunning ?? false
+                RowLayout {
                     Layout.fillWidth: true
-                    onClicked: root.mainInstance?.actionStop()
+                    spacing: Style.marginM
+
+                    NButton {
+                        readonly property bool windowOpen: root.mainInstance?.windowOpen ?? false
+                        text: windowOpen ? "Hide" : "Open"
+                        icon: windowOpen ? "minimize" : "app-window"
+                        outlined: true
+                        tooltipText: windowOpen ? "Float the Hubstaff window off-screen" : "Bring the Hubstaff window onto the current workspace"
+                        Layout.fillWidth: true
+                        onClicked: root.mainInstance?.toggleWindow()
+                    }
+
+                    NButton {
+                        text: "Open dashboard"
+                        icon: "external-link"
+                        outlined: true
+                        tooltipText: "Open app.hubstaff.com"
+                        Layout.fillWidth: true
+                        onClicked: Qt.openUrlExternally("https://app.hubstaff.com")
+                    }
                 }
             }
 

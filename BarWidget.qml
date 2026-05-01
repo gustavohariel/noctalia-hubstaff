@@ -24,8 +24,19 @@ Item {
     readonly property real barFontSize: Style.getBarFontSizeForScreen(screenName)
 
     readonly property bool isRunning: mainInstance?.isRunning ?? false
+    readonly property bool hubstaffRunning: mainInstance?.hubstaffRunning ?? false
+    readonly property bool windowOpen: mainInstance?.windowOpen ?? false
     readonly property string displayText: mainInstance?.formattedTime ?? "—"
-    readonly property string iconName: isRunning ? "media-play" : "stop"
+    readonly property string iconName: isRunning ? "stop" : "media-play"
+
+    // The bar host (BarWidgetLoader) collapses the slot when our root opacity drops
+    // to zero, so this is the supported way to disappear from the bar.
+    opacity: hubstaffRunning ? 1 : 0
+    Behavior on opacity {
+        NumberAnimation {
+            duration: 180
+        }
+    }
 
     readonly property string tooltipText: {
         if (!mainInstance)
@@ -59,6 +70,11 @@ Item {
                 "label": root.isRunning ? "Stop" : "Start",
                 "action": root.isRunning ? "stop" : "start",
                 "icon": root.isRunning ? "stop" : "media-play"
+            },
+            {
+                "label": root.windowOpen ? "Hide window" : "Open app",
+                "action": "toggleWindow",
+                "icon": root.windowOpen ? "minimize" : "app-window"
             }
         ]
 
@@ -71,6 +87,8 @@ Item {
                 root.mainInstance?.actionStop();
             else if (action === "start")
                 root.mainInstance?.actionStart();
+            else if (action === "toggleWindow")
+                root.mainInstance?.toggleWindow();
         }
     }
 
