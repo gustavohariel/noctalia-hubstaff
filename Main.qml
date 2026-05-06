@@ -264,6 +264,21 @@ Item {
                     }
                     root.lastError = "";   // suppress: widget is hidden anyway
                 } else {
+                    // Any other error means the daemon answered but the timer
+                    // can't report state right now — most commonly "Timer is
+                    // not logged in." while the user is signed out. Keep the
+                    // widget visible so Open can surface the GUI for sign-in;
+                    // otherwise the off-screen floating rule leaves Hubstaff
+                    // invisible with no way to recover from the bar.
+                    const hubstaffJustCameUp = !root.hubstaffRunning;
+                    root.hubstaffRunning = true;
+                    if (hubstaffJustCameUp)
+                        windowStateProcess.running = true;
+                    root.isRunning = false;
+                    root.everLoaded = false;
+                    root.projectName = "";
+                    root.projectId = -1;
+                    root.trackedToday = "0:00:00";
                     root.lastError = errStr;
                 }
                 return;
