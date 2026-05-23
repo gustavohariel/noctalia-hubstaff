@@ -9,12 +9,20 @@ Item {
     property var pluginApi: null
     property var pluginSettings: pluginApi?.pluginSettings ?? ({})
 
-    readonly property string cliPath: pluginSettings?.cliPath ?? "/home/realgh/Hubstaff/HubstaffCLI.bin.x86_64"
+    function expandHome(p) {
+        if (!p)
+            return "";
+        if (p.indexOf("~/") === 0)
+            return (Quickshell.env("HOME") || "") + p.substring(1);
+        return p;
+    }
+
+    readonly property string cliPath: expandHome(pluginSettings?.cliPath ?? "~/Hubstaff/HubstaffCLI.bin.x86_64")
     readonly property int refreshIntervalSec: pluginSettings?.refreshIntervalSec ?? 5
 
     // The Hubstaff GUI client lives next to the CLI in the same install dir;
     // re-launching it summons the window of the existing single-instance app.
-    readonly property string clientPath: cliPath.indexOf("HubstaffCLI") >= 0 ? cliPath.replace("HubstaffCLI", "HubstaffClient") : "/home/realgh/Hubstaff/HubstaffClient.bin.x86_64"
+    readonly property string clientPath: cliPath.indexOf("HubstaffCLI") >= 0 ? cliPath.replace("HubstaffCLI", "HubstaffClient") : expandHome("~/Hubstaff/HubstaffClient.bin.x86_64")
 
     // The CLI is the source of truth: a successful `status` response means the
     // Hubstaff daemon is up; the specific "Could not connect to timer" error

@@ -23,7 +23,7 @@
   },
   "metadata": {
     "defaultSettings": {
-      "cliPath": "/home/realgh/Hubstaff/HubstaffCLI.bin.x86_64",
+      "cliPath": "~/Hubstaff/HubstaffCLI.bin.x86_64",
       "refreshIntervalSec": 5
     }
   }

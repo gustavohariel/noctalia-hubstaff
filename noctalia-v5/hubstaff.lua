@@ -27,9 +27,9 @@ barWidget.define({
     pickable = true,
     settings = {
         { key = "cliPath", type = "string", label = "Hubstaff CLI path",
-          default = "/home/realgh/Hubstaff/HubstaffCLI.bin.x86_64" },
+          default = "~/Hubstaff/HubstaffCLI.bin.x86_64" },
         { key = "clientPath", type = "string", label = "Hubstaff client path",
-          default = "/home/realgh/Hubstaff/HubstaffClient.bin.x86_64" },
+          default = "~/Hubstaff/HubstaffClient.bin.x86_64" },
         { key = "windowScript", type = "string",
           label = "Window helper script (hubstaff-window.sh)",
           default = "~/.config/noctalia/scripts/hubstaff-window.sh" },
@@ -51,6 +51,15 @@ local lastError = ""
 
 -- ----- helpers -----
 
+-- Manifest defaults are only used to populate the settings UI; getConfig
+-- does not fall back to them. Pass real defaults at every read site via
+-- these constants so the widget works on a TOML stanza that just sets
+-- type/script/hot_reload with no per-key overrides.
+local DEFAULT_CLI = "~/Hubstaff/HubstaffCLI.bin.x86_64"
+local DEFAULT_CLIENT = "~/Hubstaff/HubstaffClient.bin.x86_64"
+local DEFAULT_WINDOW_SCRIPT = "~/.config/noctalia/scripts/hubstaff-window.sh"
+local DEFAULT_INTERVAL = 5
+
 local function shq(s)
     return "'" .. (s or ""):gsub("'", "'\\''") .. "'"
 end
@@ -62,6 +71,12 @@ local function expand(path)
         return home .. path:sub(2)
     end
     return path
+end
+
+local function cfgString(key, default)
+    local v = barWidget.getConfig(key, default)
+    if v == nil or v == "" then return default end
+    return v
 end
 
 local function split(str, sep)
@@ -123,7 +138,7 @@ end
 
 local function pollStatus()
     if pollInflight then return end
-    local cli = expand(barWidget.getConfig("cliPath", ""))
+    local cli = expand(cfgString("cliPath", DEFAULT_CLI))
     if cli == "" then
         lastError = "CLI path not set"
         hubstaffRunning = false
@@ -202,7 +217,7 @@ local function pollStatus()
 end
 
 local function actionStart()
-    local cli = expand(barWidget.getConfig("cliPath", ""))
+    local cli = expand(cfgString("cliPath", DEFAULT_CLI))
     if cli == "" then return end
     noctalia.runAsync(shq(cli) .. " resume", function(_)
         pollStatus()
@@ -210,7 +225,7 @@ local function actionStart()
 end
 
 local function actionStop()
-    local cli = expand(barWidget.getConfig("cliPath", ""))
+    local cli = expand(cfgString("cliPath", DEFAULT_CLI))
     if cli == "" then return end
     noctalia.runAsync(shq(cli) .. " stop", function(_)
         pollStatus()
@@ -218,8 +233,8 @@ local function actionStop()
 end
 
 local function actionToggleWindow()
-    local script = expand(barWidget.getConfig("windowScript", ""))
-    local client = expand(barWidget.getConfig("clientPath", ""))
+    local script = expand(cfgString("windowScript", DEFAULT_WINDOW_SCRIPT))
+    local client = expand(cfgString("clientPath", DEFAULT_CLIENT))
     if script == "" or client == "" then
         noctalia.notifyError("Hubstaff", "Window script or client path not set")
         return
@@ -238,7 +253,7 @@ end
 
 function update()
     local now = os.time()
-    local interval = barWidget.getConfig("refreshIntervalSec", 5)
+    local interval = barWidget.getConfig("refreshIntervalSec", DEFAULT_INTERVAL) or DEFAULT_INTERVAL
     if interval < 2 then interval = 2 end
     if now - lastPollEpoch >= interval then
         pollStatus()
@@ -254,3 +269,4 @@ end
 function onRightClick()
     actionToggleWindow()
 end
+
